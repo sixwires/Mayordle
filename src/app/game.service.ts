@@ -2,6 +2,8 @@ import { Injectable, ViewChild } from '@angular/core';
 import { Inject }  from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
+
+const server_addr = "http://developminttx.pythonanywhere.com/"
 @Injectable({
   	providedIn: 'root'
 })
@@ -11,6 +13,7 @@ export class Game {
   	word_matrix: Array<string>
 	green_letters: Array<string>
 	current_yellows: Array<Object>
+	
 
 
   	constructor () {
@@ -19,6 +22,7 @@ export class Game {
       	this.word_matrix = []
 		this.green_letters = []
 		this.current_yellows = []
+		this.reload_word()
   	}
 
 	// update grid
@@ -164,7 +168,18 @@ export class Game {
 	}
 
 	// generate word
-	gen_word () {
+	async fetch_word (): Promise<string> {
+
+		let x = await fetch(server_addr)
+			.then(response => response.json())
+			.then(data => {return data["word"]})
 		
+		return x
+	}
+
+	async reload_word () {
+		let new_word: string = await this.fetch_word()
+		this.target_word = new_word
+		return
 	}
 }
